@@ -26,6 +26,9 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EmailService emailService;
+
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
@@ -48,6 +51,13 @@ public class UserServiceImpl implements UserService{
 
         user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String codigo = "FEDEVETAPP";
+        String to =user.getEmail();
+        String subject = "Confirma tu cuenta en VetApp";
+        String text =String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : /n ", user.getName() , codigo);
+
+        emailService.sendSimpleMessage(to, subject, text);
+        
         return repository.save(user);
     }
 
@@ -55,5 +65,4 @@ public class UserServiceImpl implements UserService{
     public boolean existsByUsername(String username) {
         return repository.existsByUsername(username);
     }
-    
 }
