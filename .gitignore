@@ -33,3 +33,6 @@ build/
 .vscode/
 
 /src/resources/application.properties
+
+### Security ###
+/src/main/java/com/vet/app/security/

@@ -25,9 +25,9 @@ import com.vet.app.security.filter.JwtValidationFilter;
 import java.util.Arrays;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled=true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig {
-    
+
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
 
@@ -44,9 +44,9 @@ public class SpringSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests((authz) -> authz
-                .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
-                .anyRequest().authenticated())
+                // .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+                // .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                .anyRequest().permitAll())
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                 .addFilter(new JwtValidationFilter(authenticationManager()))
                 .csrf(config -> config.disable())
@@ -54,7 +54,7 @@ public class SpringSecurityConfig {
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
-    
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

@@ -1,0 +1,4 @@
+-- Insertar los roles ROLE_ADMIN y ROLE_USER
+INSERT INTO roles (name) VALUES ("ROLE_ADMIN");
+INSERT INTO roles (name) VALUES ("ROLE_CLIENTE");
+INSERT INTO roles (name) VALUES ("ROLE_VETERINARIO");

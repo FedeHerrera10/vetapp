@@ -6,6 +6,7 @@ import com.vet.app.validation.ExistsByUsername;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
-@Data 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -45,14 +47,10 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @JsonIgnoreProperties({"users", "handler", "hibernateLazyInitializer"})
+    @JsonIgnoreProperties({ "users", "handler", "hibernateLazyInitializer" })
     @ManyToMany
-    @JoinTable(
-        name = "users_roles",
-        joinColumns = @JoinColumn(name="user_id"),
-        inverseJoinColumns = @JoinColumn(name="role_id"),
-        uniqueConstraints = { @UniqueConstraint(columnNames = {"user_id", "role_id"})}
-    )
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"), uniqueConstraints = {
+            @UniqueConstraint(columnNames = { "user_id", "role_id" }) })
     private List<Role> roles;
 
     private boolean enabled;
@@ -61,12 +59,15 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean admin;
 
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mascota> mascotas;
+
+    @OneToMany(mappedBy = "veterinario")
+    private List<Turnos> turnos;
+
     @PrePersist
     public void prePersist() {
         enabled = true;
     }
 
-    
-
-    
 }
