@@ -36,3 +36,4 @@ build/
 
 ### Security ###
 /src/main/java/com/vet/app/security/
+/src/main/resources/application.properties
