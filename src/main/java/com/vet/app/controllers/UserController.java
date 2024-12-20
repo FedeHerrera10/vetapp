@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,25 +34,15 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody User user, BindingResult result) {
-        if (result.hasFieldErrors()) {
-            return validation(result);
-        }
+    public ResponseEntity<?> create(@Valid @RequestBody User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(user));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody User user, BindingResult result) {
+    public ResponseEntity<?> register(@Valid @RequestBody User user) {
         user.setAdmin(false);
         return create(user, result);
     }
-
-    @GetMapping(value="/confirm-account")
-    public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
-        return service.confirmEmail(confirmationToken);
-    }
-
-    
 
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();

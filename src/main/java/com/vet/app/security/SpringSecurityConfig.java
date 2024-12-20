@@ -25,9 +25,9 @@ import com.vet.app.security.filter.JwtValidationFilter;
 import java.util.Arrays;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled=true)
+@EnableMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig {
-    
+
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
 
@@ -55,7 +55,7 @@ public class SpringSecurityConfig {
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
-    
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

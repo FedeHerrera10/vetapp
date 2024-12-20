@@ -19,7 +19,7 @@ import com.vet.app.repositories.UserRepository;
 import com.vet.app.utils.TimeValidation;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository repository;
@@ -56,6 +56,15 @@ public class UserServiceImpl implements UserService{
             optionalRoleAdmin.ifPresent(roles::add);
         }
 
+        if (user.isCliente()) {
+            Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_CLIENTE");
+            optionalRoleAdmin.ifPresent(roles::add);
+        }
+
+        if (user.isVeterinario()) {
+            Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_VETERINARIO");
+            optionalRoleAdmin.ifPresent(roles::add);
+        }
         user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
@@ -73,11 +82,18 @@ public class UserServiceImpl implements UserService{
         return user;
     }
     
+    
+    @Override
     @Transactional(readOnly = true)
+    public Optional<User> findById(Long id) {
+        return repository.findById(id);
+    }
+
     @Override
     public boolean existsByUsername(String username) {
         return repository.existsByUsername(username);
     }
+
 
     @Override
     public ResponseEntity<?> confirmEmail(String confirmationToken) {
@@ -98,4 +114,5 @@ public class UserServiceImpl implements UserService{
         
         return ResponseEntity.badRequest().body("Error, la cuenta no pudo ser confirmada.");
     }
+
 }
