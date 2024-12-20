@@ -73,7 +73,7 @@ public class User {
 
     @PrePersist
     public void prePersist() {
-        enabled = true;
+        enabled = false;
     }
 
     

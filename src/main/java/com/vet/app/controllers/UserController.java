@@ -9,11 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vet.app.entities.User;
@@ -47,6 +47,13 @@ public class UserController {
         user.setAdmin(false);
         return create(user, result);
     }
+
+    @GetMapping(value="/confirm-account")
+    public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
+        return service.confirmEmail(confirmationToken);
+    }
+
+    
 
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();
