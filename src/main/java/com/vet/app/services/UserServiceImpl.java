@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vet.app.dtos.request.DtoResetPassword;
 import com.vet.app.entities.ConfirmationToken;
 import com.vet.app.entities.Role;
 import com.vet.app.entities.User;
@@ -17,6 +18,8 @@ import com.vet.app.repositories.ConfirmationTokenRepository;
 import com.vet.app.repositories.RoleRepository;
 import com.vet.app.repositories.UserRepository;
 import com.vet.app.utils.TimeValidation;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -94,24 +97,65 @@ public class UserServiceImpl implements UserService {
         return repository.existsByUsername(username);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> confirmEmail(String confirmationToken) {
-        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken).orElseThrow(
+                () -> new EntityNotFoundException("Codigo no encontrado."));
 
-        if (token != null) {
-            boolean timeTokenValidate = TimeValidation
-                    .validate(token.getCreatedDate().toString().replace(" ", "T").trim());
+        boolean timeTokenValidate = TimeValidation.validate(token.getCreatedDate().toString().replace(" ", "T").trim());
 
-            if (timeTokenValidate) {
-                User user = repository.findByEmailIgnoreCase(token.getUser().getEmail());
-                user.setEnabled(true);
-                repository.save(user);
-                return ResponseEntity.ok("Cuenta confirmada.");
-            }
+        if (!timeTokenValidate) {
             return ResponseEntity.badRequest().body("El codigo de verificacion expiro.");
         }
 
-        return ResponseEntity.badRequest().body("Error, la cuenta no pudo ser confirmada.");
+        User user = repository.findByEmailIgnoreCase(token.getUser().getEmail());
+        user.setEnabled(true);
+        repository.save(user);
+        confirmationTokenRepository.delete(token);
+        return ResponseEntity.ok("Cuenta confirmada.");
     }
 
+    @Transactional
+    @Override
+    public boolean resetPassword(DtoResetPassword dtoResetPassword) {
+        User user = repository.findById(dtoResetPassword.getId()).orElseThrow(
+                () -> new EntityNotFoundException("Usuario no encontrado"));
+
+        user.setEnabled(false);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        repository.save(user);
+
+        ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
+        confirmationTokenRepository.save(oConfirmationToken);
+
+        String codigo = oConfirmationToken.getConfirmationToken();
+        String to = user.getEmail();
+        String subject = "Su contraseña fue cambiada con exito!";
+        String text = String.format("Hola %s  confirma tu cuenta nuevamente  ingresando el siguiente codigo : %s ",
+                user.getName(), codigo);
+
+        emailService.sendSimpleMessage(to, subject, text);
+
+        return true;
+    }
+
+    @Override
+    public boolean newCode(Long idUser) {
+        User user = repository.findById(idUser).orElseThrow(
+                () -> new EntityNotFoundException("Usuario no encontrado"));
+
+        ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
+        confirmationTokenRepository.save(oConfirmationToken);
+
+        String codigo = oConfirmationToken.getConfirmationToken();
+        String to = user.getEmail();
+        String subject = "Codigo de confirmacion enviado - VetApp";
+        String text = String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName(),
+                codigo);
+
+        emailService.sendSimpleMessage(to, subject, text);
+
+        return true;
+    }
 }

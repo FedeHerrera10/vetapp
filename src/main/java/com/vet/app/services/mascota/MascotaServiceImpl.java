@@ -10,6 +10,7 @@ import com.vet.app.entities.Mascota;
 import com.vet.app.entities.User;
 import com.vet.app.repositories.MascotaRepository;
 import com.vet.app.services.UserService;
+import com.vet.app.utils.UtilService;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,9 @@ public class MascotaServiceImpl implements MascotaService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UtilService utilService;
 
     @Override
     @Transactional(readOnly = true)
@@ -49,25 +53,10 @@ public class MascotaServiceImpl implements MascotaService {
     @Override
     @Transactional
     public Optional<Mascota> update(Mascota mascota, Long id) {
-        Optional<Mascota> mascotaDb = mascotaRepository.findById(id);
-
-        mascotaDb.ifPresent(m -> {
-            if (mascota.getEspecie() != null) {
-                m.setEspecie(mascota.getEspecie());
-            }
-            if (mascota.getRaza() != null) {
-                m.setRaza(mascota.getRaza());
-            }
-            if (mascota.getEdad() != null) {
-                m.setEdad(mascota.getEdad());
-            }
-            if (mascota.getVacunas() != null) {
-                m.setVacunas(mascota.getVacunas());
-            }
-            mascotaRepository.save(m);
+        return mascotaRepository.findById(id).map(m -> {
+            utilService.copyNonNullProperties(mascota, m);
+            return mascotaRepository.save(m);
         });
-
-        return mascotaDb;
     }
 
     @Override
