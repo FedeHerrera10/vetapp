@@ -3,7 +3,9 @@ package com.vet.app.entities;
 import java.util.List;
 
 import com.vet.app.validation.ExistsByUsername;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
@@ -78,6 +80,7 @@ public class User {
     private boolean veterinario;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Mascota> mascotas;
 
     @OneToMany(mappedBy = "veterinario")

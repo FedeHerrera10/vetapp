@@ -71,18 +71,18 @@ public class UserServiceImpl implements UserService {
 
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(oConfirmationToken);
-        
+
         String codigo = oConfirmationToken.getConfirmationToken();
-        String to =user.getEmail();
+        String to = user.getEmail();
         String subject = "Confirma tu cuenta en VetApp";
-        String text =String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName() , codigo);
+        String text = String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName(),
+                codigo);
 
         emailService.sendSimpleMessage(to, subject, text);
-        
+
         return user;
     }
-    
-    
+
     @Override
     @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
@@ -94,16 +94,15 @@ public class UserServiceImpl implements UserService {
         return repository.existsByUsername(username);
     }
 
-
     @Override
     public ResponseEntity<?> confirmEmail(String confirmationToken) {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
-        
-        if(token != null)
-        {
-            boolean timeTokenValidate=TimeValidation.validate(token.getCreatedDate().toString().replace(" ", "T").trim());
 
-            if(timeTokenValidate){
+        if (token != null) {
+            boolean timeTokenValidate = TimeValidation
+                    .validate(token.getCreatedDate().toString().replace(" ", "T").trim());
+
+            if (timeTokenValidate) {
                 User user = repository.findByEmailIgnoreCase(token.getUser().getEmail());
                 user.setEnabled(true);
                 repository.save(user);
@@ -111,7 +110,7 @@ public class UserServiceImpl implements UserService {
             }
             return ResponseEntity.badRequest().body("El codigo de verificacion expiro.");
         }
-        
+
         return ResponseEntity.badRequest().body("Error, la cuenta no pudo ser confirmada.");
     }
 
