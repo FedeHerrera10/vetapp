@@ -38,4 +38,5 @@ build/
 ### Security ###
 /src/main/java/com/vet/app/security/
 /src/main/resources/application.properties
->>>>>>> nico-dev
+
+src/main/resources/application.properties
