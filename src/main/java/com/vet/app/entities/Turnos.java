@@ -3,6 +3,7 @@ package com.vet.app.entities;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vet.app.utils.EstadosEnum;
 
 import jakarta.persistence.Column;

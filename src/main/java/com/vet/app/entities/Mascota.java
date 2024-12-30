@@ -3,6 +3,7 @@ package com.vet.app.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,6 +15,7 @@ import jakarta.persistence.GenerationType;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -39,12 +41,15 @@ public class Mascota {
     @NotBlank(message = "La raza es obligatoria")
     private String raza;
 
+    @NotNull(message = "El nombre es obligatorio")
     private Integer edad;
 
+    @NotBlank(message = "Las vacunas son obligatorias")
     private String vacunas;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
+    @JsonBackReference
     private User cliente;
 
     @OneToMany(mappedBy = "mascota", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -71,9 +76,15 @@ public class Mascota {
     }
 
     private void trimAll() {
-        this.especie = this.especie.trim();
-        this.raza = this.raza.trim();
-        this.vacunas = this.vacunas.trim();
+        if (this.especie != null) {
+            this.especie = this.especie.trim();
+        }
+        if (this.raza != null) {
+            this.raza = this.raza.trim();
+        }
+        if (this.vacunas != null) {
+            this.vacunas = this.vacunas.trim();
+        }
     }
 
 }

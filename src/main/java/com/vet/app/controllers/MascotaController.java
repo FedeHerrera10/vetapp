@@ -36,7 +36,7 @@ public class MascotaController {
         return mascotaService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/{clienteId}")
     public ResponseEntity<?> createMascota(@Valid @RequestBody Mascota mascota, @PathVariable Long clienteId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(mascotaService.save(mascota, clienteId));
     }

@@ -21,7 +21,6 @@ import com.vet.app.utils.TimeValidation;
 
 import jakarta.persistence.EntityNotFoundException;
 
-
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -75,18 +74,18 @@ public class UserServiceImpl implements UserService {
 
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(oConfirmationToken);
-        
+
         String codigo = oConfirmationToken.getConfirmationToken();
-        String to =user.getEmail();
+        String to = user.getEmail();
         String subject = "Confirma tu cuenta en VetApp";
-        String text =String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName() , codigo);
+        String text = String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName(),
+                codigo);
 
         emailService.sendSimpleMessage(to, subject, text);
-        
+
         return user;
     }
-    
-    
+
     @Override
     @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
@@ -102,19 +101,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<?> confirmEmail(String confirmationToken) {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken).orElseThrow(
-            () -> new EntityNotFoundException("Codigo no encontrado."));
-        
-        boolean timeTokenValidate=TimeValidation.validate(token.getCreatedDate().toString().replace(" ", "T").trim());
-        
-        if(!timeTokenValidate){
+                () -> new EntityNotFoundException("Codigo no encontrado."));
+
+        boolean timeTokenValidate = TimeValidation.validate(token.getCreatedDate().toString().replace(" ", "T").trim());
+
+        if (!timeTokenValidate) {
             return ResponseEntity.badRequest().body("El codigo de verificacion expiro.");
         }
-        
+
         User user = repository.findByEmailIgnoreCase(token.getUser().getEmail());
         user.setEnabled(true);
         repository.save(user);
         confirmationTokenRepository.delete(token);
-        return ResponseEntity.ok("Cuenta confirmada.");    
+        return ResponseEntity.ok("Cuenta confirmada.");
     }
 
     @Transactional
@@ -123,38 +122,40 @@ public class UserServiceImpl implements UserService {
         User user = repository.findById(dtoResetPassword.getId()).orElseThrow(
                 () -> new EntityNotFoundException("Usuario no encontrado"));
 
-        user.setEnabled(false);        
+        user.setEnabled(false);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
 
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(oConfirmationToken);
-        
+
         String codigo = oConfirmationToken.getConfirmationToken();
-        String to =user.getEmail();
+        String to = user.getEmail();
         String subject = "Su contraseña fue cambiada con exito!";
-        String text =String.format("Hola %s  confirma tu cuenta nuevamente  ingresando el siguiente codigo : %s ", user.getName() , codigo);
+        String text = String.format("Hola %s  confirma tu cuenta nuevamente  ingresando el siguiente codigo : %s ",
+                user.getName(), codigo);
 
         emailService.sendSimpleMessage(to, subject, text);
 
-       return true;
+        return true;
     }
 
     @Override
     public boolean newCode(Long idUser) {
         User user = repository.findById(idUser).orElseThrow(
                 () -> new EntityNotFoundException("Usuario no encontrado"));
-        
+
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(oConfirmationToken);
-        
+
         String codigo = oConfirmationToken.getConfirmationToken();
-        String to =user.getEmail();
+        String to = user.getEmail();
         String subject = "Codigo de confirmacion enviado - VetApp";
-        String text =String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName() , codigo);
+        String text = String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName(),
+                codigo);
 
         emailService.sendSimpleMessage(to, subject, text);
-        
+
         return true;
     }
 }

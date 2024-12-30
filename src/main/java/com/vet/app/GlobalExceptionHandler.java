@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.vet.app.exceptions.EntityExistException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -126,18 +128,27 @@ public class GlobalExceptionHandler {
 
     // =================== Metodos para manejar excepciones personalizadas
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleProjectNotFoundException(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<Map<String, Object>> handleProjectNotFoundException(EntityNotFoundException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(EntityExistException.class)
+    public ResponseEntity<Map<String, Object>> entityExistException(EntityExistException ex) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     // Escucho de manera global las excepciones de validacion @Valid
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        // BindingResult result = ex.getBindingResult();
-        // result.getFieldErrors().forEach(error -> errors.put(error.getField(),
-        // error.getDefaultMessage()));
         Map<String, String> errors = new HashMap<>();
-        errors.put("error", "Error en el formato de los datos enviados.");
+        BindingResult result = ex.getBindingResult();
+        result.getFieldErrors().forEach(error -> errors.put(error.getField(),
+                error.getDefaultMessage()));
+        // errors.put("error", "Error en el formato de los datos enviados.");
 
         return ResponseEntity.badRequest().body(errors);
     }

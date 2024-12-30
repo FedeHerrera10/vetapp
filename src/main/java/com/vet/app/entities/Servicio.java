@@ -47,14 +47,18 @@ public class Servicio {
     }
 
     @PreUpdate
-    public void postPersist() {
+    public void preUpdate() {
         this.audit.onUpdate();
         trimAll();
     }
 
     public void trimAll() {
-        this.nombre = this.nombre.trim();
-        this.descripcion = this.descripcion.trim();
+        if (this.nombre != null) {
+            this.nombre = this.nombre.trim();
+        }
+        if (this.descripcion != null) {
+            this.descripcion = this.descripcion.trim();
+        }
     }
 
 }
