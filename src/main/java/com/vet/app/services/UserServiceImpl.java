@@ -158,4 +158,9 @@ public class UserServiceImpl implements UserService {
 
         return true;
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return repository.existsByEmail(email);
+    }
 }
