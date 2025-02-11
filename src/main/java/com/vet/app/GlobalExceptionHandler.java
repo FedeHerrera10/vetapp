@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler {
 
     // Excepcion para tipo de datos incorrectos en request
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    public ResponseEntity<?> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", "Error en el formato de los datos enviados.");
 
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler {
             errorResponse.put("detalles", "El formato de los datos enviados es incorrecto o no se puede convertir.");
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ocurrio un error. Verifique los datos enviados.");
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -143,13 +144,13 @@ public class GlobalExceptionHandler {
 
     // Escucho de manera global las excepciones de validacion @Valid
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         BindingResult result = ex.getBindingResult();
         result.getFieldErrors().forEach(error -> errors.put(error.getField(),
                 error.getDefaultMessage()));
         // errors.put("error", "Error en el formato de los datos enviados.");
 
-        return ResponseEntity.badRequest().body(errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ocurrio un error. Verique los datos.");
     }
 }

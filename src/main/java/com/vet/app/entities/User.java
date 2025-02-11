@@ -45,7 +45,6 @@ public class User {
     @NotBlank
     private String lastname;
 
-    @ExistsByUsername
     @NotBlank
     @Size(min = 4, max = 12)
     @Column(unique = true)

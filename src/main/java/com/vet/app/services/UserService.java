@@ -24,4 +24,6 @@ public interface UserService {
 
     boolean newCode(Long idUser);
 
+    boolean existsByEmail(String email);
+
 }
