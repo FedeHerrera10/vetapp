@@ -39,6 +39,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ConfirmationTokenRepository confirmationTokenRepository;
 
+    private static final String ROLE_USER = "ROLE_USER";
+    private static final String ROLE_ADMIN = "ROLE_ADMIN";
+    private static final String ROLE_CLIENTE = "ROLE_CLIENTE";
+    private static final String ROLE_VETERINARIO = "ROLE_VETERINARIO";
+    private static final String CONFIRMATION_EMAIL_SUBJECT = "Confirma tu cuenta en VetApp";
+    private static final String RESET_PASSWORD_EMAIL_SUBJECT = "Su contraseña fue cambiada con exito!";
+    private static final String NEW_CODE_EMAIL_SUBJECT = "Codigo de confirmacion enviado - VetApp";
+
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
@@ -48,26 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User save(User user) {
-
-        Optional<Role> optionalRoleUser = roleRepository.findByName("ROLE_USER");
-        List<Role> roles = new ArrayList<>();
-
-        optionalRoleUser.ifPresent(roles::add);
-
-        if (user.isAdmin()) {
-            Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_ADMIN");
-            optionalRoleAdmin.ifPresent(roles::add);
-        }
-
-        if (user.isCliente()) {
-            Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_CLIENTE");
-            optionalRoleAdmin.ifPresent(roles::add);
-        }
-
-        if (user.isVeterinario()) {
-            Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_VETERINARIO");
-            optionalRoleAdmin.ifPresent(roles::add);
-        }
+        List<Role> roles = assignRoles(user);
         user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
@@ -75,15 +64,34 @@ public class UserServiceImpl implements UserService {
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(oConfirmationToken);
 
-        String codigo = oConfirmationToken.getConfirmationToken();
-        String to = user.getEmail();
-        String subject = "Confirma tu cuenta en VetApp";
-        String text = String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName(),
-                codigo);
-
-        emailService.sendSimpleMessage(to, subject, text);
+        sendConfirmationEmail(user, oConfirmationToken);
 
         return user;
+    }
+
+    private List<Role> assignRoles(User user) {
+        List<Role> roles = new ArrayList<>();
+        roleRepository.findByName(ROLE_USER).ifPresent(roles::add);
+
+        if (user.isAdmin()) {
+            roleRepository.findByName(ROLE_ADMIN).ifPresent(roles::add);
+        }
+        if (user.isCliente()) {
+            roleRepository.findByName(ROLE_CLIENTE).ifPresent(roles::add);
+        }
+        if (user.isVeterinario()) {
+            roleRepository.findByName(ROLE_VETERINARIO).ifPresent(roles::add);
+        }
+        return roles;
+    }
+
+    private void sendConfirmationEmail(User user, ConfirmationToken token) {
+        String codigo = token.getConfirmationToken();
+        String to = user.getEmail();
+        String subject = CONFIRMATION_EMAIL_SUBJECT;
+        String text = String.format("Hola %s, confirma tu cuenta ingresando el siguiente codigo: %s", user.getName(), codigo);
+
+        emailService.sendSimpleMessage(to, subject, text);
     }
 
     @Override
@@ -129,15 +137,18 @@ public class UserServiceImpl implements UserService {
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(oConfirmationToken);
 
-        String codigo = oConfirmationToken.getConfirmationToken();
-        String to = user.getEmail();
-        String subject = "Su contraseña fue cambiada con exito!";
-        String text = String.format("Hola %s  confirma tu cuenta nuevamente  ingresando el siguiente codigo : %s ",
-                user.getName(), codigo);
-
-        emailService.sendSimpleMessage(to, subject, text);
+        sendResetPasswordEmail(user, oConfirmationToken);
 
         return true;
+    }
+
+    private void sendResetPasswordEmail(User user, ConfirmationToken token) {
+        String codigo = token.getConfirmationToken();
+        String to = user.getEmail();
+        String subject = RESET_PASSWORD_EMAIL_SUBJECT;
+        String text = String.format("Hola %s, confirma tu cuenta nuevamente ingresando el siguiente codigo: %s", user.getName(), codigo);
+
+        emailService.sendSimpleMessage(to, subject, text);
     }
 
     @Override
@@ -148,15 +159,18 @@ public class UserServiceImpl implements UserService {
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(oConfirmationToken);
 
-        String codigo = oConfirmationToken.getConfirmationToken();
-        String to = user.getEmail();
-        String subject = "Codigo de confirmacion enviado - VetApp";
-        String text = String.format("Hola %s  confirma tu cuenta ingresando el siguiente codigo : %s ", user.getName(),
-                codigo);
-
-        emailService.sendSimpleMessage(to, subject, text);
+        sendNewCodeEmail(user, oConfirmationToken);
 
         return true;
+    }
+
+    private void sendNewCodeEmail(User user, ConfirmationToken token) {
+        String codigo = token.getConfirmationToken();
+        String to = user.getEmail();
+        String subject = NEW_CODE_EMAIL_SUBJECT;
+        String text = String.format("Hola %s, confirma tu cuenta ingresando el siguiente codigo: %s", user.getName(), codigo);
+
+        emailService.sendSimpleMessage(to, subject, text);
     }
 
     @Override

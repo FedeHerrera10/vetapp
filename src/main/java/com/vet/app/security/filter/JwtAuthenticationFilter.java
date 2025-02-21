@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -30,6 +33,9 @@ import static com.vet.app.security.TokenJwtConfig.*;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
+    static final  String ERROR_INVALID_USERNAME_PASSWORD = "Usuario o Contraseña incorrectos!";
+    static final  String ERROR_ACCOUNT_DISABLED = "Su cuenta no esta habilitada!";
+    static final  String ERROR_LOCKED = "Su cuenta esta bloqueada!";
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -97,14 +103,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException failed) throws IOException, ServletException {
-        Map<String, String> body = new HashMap<>();
-        String messageError = "Error : usuario o password incorrectos!";
+    AuthenticationException failed) throws IOException, ServletException {
+        String errorMString=failed.getMessage();
         
+        if (failed instanceof BadCredentialsException) {
+            errorMString=ERROR_INVALID_USERNAME_PASSWORD;
+        } else if (failed instanceof DisabledException) {
+            errorMString=ERROR_ACCOUNT_DISABLED;
+        } else if (failed instanceof LockedException) {
+            errorMString=ERROR_LOCKED;
+        }
 
-        response.getWriter().write(new ObjectMapper().writeValueAsString(messageError));
-        response.setStatus(401);
+        Map<String, String> body = new HashMap<>();
+        body.put("message", errorMString);
+
+        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setContentType(CONTENT_TYPE);
+        response.setStatus(401);
     }
 
 }
