@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class DtoResetPassword {
     
     @NotNull
-    Long id;
+    String username;
     
     @NotBlank
     String password;

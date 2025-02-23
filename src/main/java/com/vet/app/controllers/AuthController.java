@@ -1,6 +1,7 @@
 package com.vet.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import com.vet.app.services.UserService;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -28,11 +30,11 @@ public class AuthController {
         return service.confirmEmail(confirmationToken);
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@Valid @RequestBody DtoResetPassword dtoResetPassword) {
-        service.resetPassword(dtoResetPassword);
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody DtoResetPassword dtoResetPassword) {
+        boolean update = service.resetPassword(dtoResetPassword);
+        if(!update) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No se pudo actualizar la contraseña.");
         return ResponseEntity.status(200).body("Contraseña actualizada");
-        
     }
 
     @PostMapping("/new-code")

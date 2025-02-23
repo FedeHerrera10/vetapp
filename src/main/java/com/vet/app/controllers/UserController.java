@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vet.app.dtos.request.DtoResetPassword;
 import com.vet.app.entities.User;
 import com.vet.app.services.UserService;
 
@@ -54,4 +55,5 @@ public class UserController {
     public String updateUser(@PathVariable Long id, @RequestBody String entity) {
         return entity;
     }
+    
 }
