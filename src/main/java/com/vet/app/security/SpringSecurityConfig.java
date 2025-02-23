@@ -46,7 +46,8 @@ public class SpringSecurityConfig {
         return http.authorizeHttpRequests((authz) -> authz
                 .requestMatchers(HttpMethod.GET, "/api/user").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/user/register").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/user/confirm-account/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/auth/confirm-account/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/auth/reset-password/**").permitAll()
                 .anyRequest().authenticated())
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                 .addFilter(new JwtValidationFilter(authenticationManager()))

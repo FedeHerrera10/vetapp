@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
     private static final String CONFIRMATION_EMAIL_SUBJECT = "Confirma tu cuenta en VetApp";
     private static final String RESET_PASSWORD_EMAIL_SUBJECT = "Su contraseña fue cambiada con exito!";
     private static final String NEW_CODE_EMAIL_SUBJECT = "Codigo de confirmacion enviado - VetApp";
+    private static final String USER_NOT_FOUND= "Usuario no encontrado";
 
     @Override
     @Transactional(readOnly = true)
@@ -127,11 +128,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public boolean resetPassword(DtoResetPassword dtoResetPassword) {
-        User user = repository.findById(dtoResetPassword.getId()).orElseThrow(
-                () -> new EntityNotFoundException("Usuario no encontrado"));
-
+        User user = repository.findByUsername(dtoResetPassword.getUsername()).orElseThrow(
+                () -> new EntityNotFoundException(USER_NOT_FOUND));
+        Long idUser = user.getId();        
+        confirmationTokenRepository.deleteAllByUser_Id(idUser);
         user.setEnabled(false);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(dtoResetPassword.getPassword()));
         repository.save(user);
 
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
@@ -154,7 +156,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean newCode(Long idUser) {
         User user = repository.findById(idUser).orElseThrow(
-                () -> new EntityNotFoundException("Usuario no encontrado"));
+                () -> new EntityNotFoundException(USER_NOT_FOUND));
 
         ConfirmationToken oConfirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(oConfirmationToken);
