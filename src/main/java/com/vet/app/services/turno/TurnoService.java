@@ -15,4 +15,6 @@ public interface TurnoService {
     Optional<Turnos> update(Turnos turno, Long id);
 
     Optional<Turnos> delete(Long id);
+
+    List<Object[]> findTurnosByVeterinarioId(Long veterinarioId);
 }

@@ -1,20 +1,16 @@
 package com.vet.app.entities;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vet.app.utils.EstadosEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,49 +19,36 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "turnos")
+@Table(name = "disponibilidad")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Turnos {
-
+public class Disponibilidad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "mascota_id")
-    private Mascota mascota;
-
-    @ManyToOne
-    @JoinColumn(name = "servicio_id", nullable = false)
-    private Servicio servicio;
-
-    @ManyToOne
     @JoinColumn(name = "veterinario_id")
-    private User veterinario;
+    private User veterinarioId;
 
-    @Column(name = "fecha", nullable = false)
-    @NotBlank(message = "La fecha es obligatoria")
+    @Column(nullable = false, name = "fecha")
     @DateTimeFormat(pattern = "yyyy-MM-dd", iso = ISO.DATE)
     private LocalDate fecha;
 
-    @Column(name = "horario", nullable = false)
-    @NotBlank(message = "El horario es obligatorio")
+    @Column(nullable = false, name = "hora_inicio")
     @DateTimeFormat(pattern = "HH:mm", iso = ISO.TIME)
-    private LocalTime horario;
+    private LocalTime horaInicio;
 
-    @Enumerated(EnumType.STRING)
-    private EstadosEnum estado;
-
-    @Column(name = "notificaciones")
-    private Boolean notificaciones;
+    @Column(nullable = false, name = "hora_fin")
+    @DateTimeFormat(pattern = "HH:mm", iso = ISO.TIME)
+    private LocalTime horaFin;
 
     @Embedded
     @JsonIgnore

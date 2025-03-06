@@ -32,9 +32,15 @@ public class TurnoServiceImpl implements TurnoService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Turnos> findById(Long id) {
         return turnosRepository.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Object[]> findTurnosByVeterinarioId(Long veterinarioId) {
+        return turnosRepository.findTurnosByVeterinarioId(veterinarioId);
     }
 
     @Override

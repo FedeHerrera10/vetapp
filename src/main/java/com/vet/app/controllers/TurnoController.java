@@ -37,6 +37,11 @@ public class TurnoController {
         return turnoService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/veterinario/{veterinarioId}")
+    public ResponseEntity<?> viewByVeterinario(@PathVariable Long veterinarioId) {
+        return ResponseEntity.ok(turnoService.findTurnosByVeterinarioId(veterinarioId));
+    }
+
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody Turnos turno) {
         return ResponseEntity.status(HttpStatus.CREATED).body(turnoService.save(turno));
