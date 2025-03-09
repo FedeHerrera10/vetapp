@@ -148,8 +148,7 @@ public class GlobalExceptionHandler {
         BindingResult result = ex.getBindingResult();
         result.getFieldErrors().forEach(error -> errors.put(error.getField(),
                 error.getDefaultMessage()));
-        // errors.put("error", "Error en el formato de los datos enviados.");
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ocurrio un error. Verique los datos.");
     }
+
 }

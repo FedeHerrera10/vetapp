@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -67,16 +68,15 @@ public class User {
     private boolean enabled;
 
     @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean admin;
 
     @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean cliente;
 
     @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean veterinario;
+
+    private boolean password_expired;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -85,9 +85,6 @@ public class User {
     @OneToMany(mappedBy = "veterinario")
     private List<Turnos> turnos;
 
-    @PrePersist
-    public void prePersist() {
-        enabled = false;
-    }
-
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private ImageProfile imageProfile;
 }

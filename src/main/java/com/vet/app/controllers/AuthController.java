@@ -1,18 +1,17 @@
 package com.vet.app.controllers;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vet.app.dtos.request.DtoResetPassword;
 import com.vet.app.services.UserService;
 
-import jakarta.validation.Valid;
-
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,9 +24,9 @@ public class AuthController {
     @Autowired
     private UserService service;
 
-    @GetMapping(value="/confirm-account")
-    public ResponseEntity<?> confirmUserAccount(@RequestParam("token") String confirmationToken) {
-        return service.confirmEmail(confirmationToken);
+    @PutMapping(value="/confirm-account/{token}")
+    public ResponseEntity<?> confirmUserAccount(@PathVariable String token) {
+        return service.confirmEmail(token);
     }
 
     @PutMapping("/reset-password")
@@ -38,8 +37,8 @@ public class AuthController {
     }
 
     @PostMapping("/new-code")
-    public ResponseEntity<?> generateNewCode(@RequestBody Long id) {
-        service.newCode(id);
+    public ResponseEntity<?> generateNewCode(@RequestBody Map<String, String> requestBody) {
+        service.newCode(requestBody.get("email"));
         return ResponseEntity.status(200).body("Codigo enviado , revise su mail.");
     }
     
