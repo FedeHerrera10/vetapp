@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.vet.app.dtos.request.DtoResetPassword;
+import com.vet.app.dtos.DtoUser;
+import com.vet.app.dtos.MapperUtil;
+import com.vet.app.dtos.request.DtoUserUpdate;
 import com.vet.app.entities.User;
 import com.vet.app.services.UserService;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -27,14 +30,18 @@ public class UserController {
     @Autowired
     private UserService service;
 
-    @GetMapping("")
-    public List<User> getAllUsers() {
-        return (List<User>) service.findAll();
+    @Autowired
+    private MapperUtil mapper;
+
+    @GetMapping("/list")
+    public List<DtoUser> getAllUsers() {
+        return (List<DtoUser>) service.findAll();
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUser(@PathVariable Long userId) {
-        return service.findById(userId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getUserById(@PathVariable Long userId) {
+        User user = service.findById(userId).get();
+        return ResponseEntity.status(HttpStatus.OK).body(mapper.mapEntityToDto(user, DtoUser.class));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -47,13 +54,20 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody User user) {
-        user.setAdmin(false);
         return create(user);
     }
 
+   
+    @GetMapping("/")
+    public ResponseEntity<?> getUser() {
+        return service.getUser();
+    }
+
     @PutMapping("/{id}")
-    public String updateUser(@PathVariable Long id, @RequestBody String entity) {
-        return entity;
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody DtoUserUpdate userUpdate) {
+        service.updateUser(id, userUpdate);
+        
+        return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado");
     }
     
 }
