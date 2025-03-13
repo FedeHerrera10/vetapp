@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         user.setRoles(roles);
 
         if (isRoleClient(user) == false) {
-            user.setPassword_expired(true);
+            user.setPassword_expired(false);
             passwordRaw = user.getPassword();
             user.setEnabled(true);
         }
