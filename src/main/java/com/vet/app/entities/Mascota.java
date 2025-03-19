@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -44,11 +45,20 @@ public class Mascota {
     @NotBlank(message = "La raza es obligatoria")
     private String raza;
 
-    @NotNull(message = "El nombre es obligatorio")
+    @NotBlank(message = "La vacunas es obligatoria")
+    private String vacunas;
+
+    @NotNull(message = "La edad es obligatoria")
     private Integer edad;
 
-    @NotBlank(message = "Las vacunas son obligatorias")
-    private String vacunas;
+    private Double peso;
+
+    private String color;
+
+    private String caracteristicas;
+
+    @Lob
+    private String imagePet;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
@@ -89,6 +99,7 @@ public class Mascota {
         if (this.raza != null) {
             this.raza = this.raza.trim();
         }
+
         if (this.vacunas != null) {
             this.vacunas = this.vacunas.trim();
         }

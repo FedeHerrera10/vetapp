@@ -44,11 +44,13 @@ public class SpringSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests((authz) -> authz
-                .requestMatchers(HttpMethod.GET, "/api/user").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/images/upload").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/user/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/confirm-account/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/auth/confirm-account/**").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/api/auth/reset-password/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/new-code/**").permitAll()
                 .anyRequest().authenticated())
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                 .addFilter(new JwtValidationFilter(authenticationManager()))
