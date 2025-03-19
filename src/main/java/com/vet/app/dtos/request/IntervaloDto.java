@@ -13,13 +13,15 @@ public class IntervaloDto {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd", iso = ISO.DATE)
     private LocalDate fecha;
-    private LocalTime horaInicio;
+    @DateTimeFormat(pattern = "HH:mm", iso = ISO.TIME)
+    private String horaInicio;
+    @DateTimeFormat(pattern = "HH:mm", iso = ISO.TIME)
     private LocalTime horaFin;
 
     public IntervaloDto() {
     }
 
-    public IntervaloDto(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
+    public IntervaloDto(LocalDate fecha, String horaInicio, LocalTime horaFin) {
         this.fecha = fecha;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;

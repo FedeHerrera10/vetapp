@@ -36,6 +36,12 @@ public class MascotaController {
         return mascotaService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/user/{clienteId}")
+    public ResponseEntity<?> getMascotasByClienteId(@PathVariable Long clienteId) {
+        return mascotaService.getMascotasByClienteId(clienteId).map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/{clienteId}")
     public ResponseEntity<?> createMascota(@Valid @RequestBody Mascota mascota, @PathVariable Long clienteId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(mascotaService.save(mascota, clienteId));

@@ -36,6 +36,9 @@ public class Mascota {
     private Long id;
 
     @NotBlank(message = "El nombre es obligatorio")
+    private String nombre;
+
+    @NotBlank(message = "La especie es obligatoria")
     private String especie;
 
     @NotBlank(message = "La raza es obligatoria")
@@ -69,6 +72,10 @@ public class Mascota {
         trimAll();
     }
 
+    public Mascota(Long id) {
+        this.id = id;
+    }
+
     @PreUpdate
     public void postPersist() {
         this.audit.onUpdate();
@@ -84,6 +91,9 @@ public class Mascota {
         }
         if (this.vacunas != null) {
             this.vacunas = this.vacunas.trim();
+        }
+        if (this.nombre != null) {
+            this.nombre = this.nombre.trim();
         }
     }
 

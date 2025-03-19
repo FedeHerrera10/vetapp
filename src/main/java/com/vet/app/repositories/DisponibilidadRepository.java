@@ -12,7 +12,10 @@ import com.vet.app.entities.User;
 
 public interface DisponibilidadRepository extends CrudRepository<Disponibilidad, Long> {
 
-    @Query("SELECT d FROM Disponibilidad d WHERE d.veterinarioId.id = ?1 AND d.fecha = ?2")
+    @Query("SELECT d FROM Disponibilidad d WHERE d.veterinarioId.id = ?1 AND ?2 BETWEEN d.fechaInicio AND d.fechaFin")
     Optional<List<Disponibilidad>> findByVetAndFecha(Long veterinarioId, LocalDate fecha);
+
+    @Query("SELECT d FROM Disponibilidad d WHERE d.veterinarioId.id = ?1")
+    Optional<List<Disponibilidad>> findByVet(Long veterinarioId);
 
 }

@@ -39,6 +39,10 @@ public class Servicio {
     @JsonIgnore
     private Audit audit = new Audit();
 
+    public Servicio(Long id) {
+        this.id = id;
+    }
+
     @PrePersist
     public void prePersist() {
         this.audit.onCreate();

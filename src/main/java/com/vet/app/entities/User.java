@@ -77,6 +77,10 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean veterinario;
 
+    public User(Long id) {
+        this.id = id;
+    }
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Mascota> mascotas;

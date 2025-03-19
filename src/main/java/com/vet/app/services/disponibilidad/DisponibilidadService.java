@@ -1,6 +1,5 @@
 package com.vet.app.services.disponibilidad;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +18,8 @@ public interface DisponibilidadService {
 
     Optional<Disponibilidad> delete(Long id);
 
-    List<IntervaloDto> obtenerIntervaloDisponibles(Long veterinarioId, LocalDate fecha);
+    List<IntervaloDto> obtenerIntervaloDisponibles(Long veterinarioId, IntervaloDto fecha);
+
+    List<String> obtenerRangoFechasISO(Long veterinarioId);
 
 }

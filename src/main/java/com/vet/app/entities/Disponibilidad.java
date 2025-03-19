@@ -22,7 +22,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "disponibilidad")
@@ -38,9 +37,13 @@ public class Disponibilidad {
     @JoinColumn(name = "veterinario_id")
     private User veterinarioId;
 
-    @Column(nullable = false, name = "fecha")
+    @Column(nullable = false, name = "fecha_inicio")
     @DateTimeFormat(pattern = "yyyy-MM-dd", iso = ISO.DATE)
-    private LocalDate fecha;
+    private LocalDate fechaInicio;
+
+    @Column(nullable = false, name = "fecha_fin")
+    @DateTimeFormat(pattern = "yyyy-MM-dd", iso = ISO.DATE)
+    private LocalDate fechaFin;
 
     @Column(nullable = false, name = "hora_inicio")
     @DateTimeFormat(pattern = "HH:mm", iso = ISO.TIME)

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vet.app.dtos.request.DtoResetPassword;
+import com.vet.app.dtos.request.DtoUserVeterinario;
 import com.vet.app.entities.ConfirmationToken;
 import com.vet.app.entities.Role;
 import com.vet.app.entities.User;
@@ -46,12 +47,17 @@ public class UserServiceImpl implements UserService {
     private static final String CONFIRMATION_EMAIL_SUBJECT = "Confirma tu cuenta en VetApp";
     private static final String RESET_PASSWORD_EMAIL_SUBJECT = "Su contraseña fue cambiada con exito!";
     private static final String NEW_CODE_EMAIL_SUBJECT = "Codigo de confirmacion enviado - VetApp";
-    private static final String USER_NOT_FOUND= "Usuario no encontrado";
+    private static final String USER_NOT_FOUND = "Usuario no encontrado";
 
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
         return (List<User>) repository.findAll();
+    }
+
+    @Override
+    public List<DtoUserVeterinario> findAllVeterinarios() {
+        return repository.findAllVeterinarios();
     }
 
     @Override
@@ -90,7 +96,8 @@ public class UserServiceImpl implements UserService {
         String codigo = token.getConfirmationToken();
         String to = user.getEmail();
         String subject = CONFIRMATION_EMAIL_SUBJECT;
-        String text = String.format("Hola %s, confirma tu cuenta ingresando el siguiente codigo: %s", user.getName(), codigo);
+        String text = String.format("Hola %s, confirma tu cuenta ingresando el siguiente codigo: %s", user.getName(),
+                codigo);
 
         emailService.sendSimpleMessage(to, subject, text);
     }
@@ -130,7 +137,7 @@ public class UserServiceImpl implements UserService {
     public boolean resetPassword(DtoResetPassword dtoResetPassword) {
         User user = repository.findByUsername(dtoResetPassword.getUsername()).orElseThrow(
                 () -> new EntityNotFoundException(USER_NOT_FOUND));
-        Long idUser = user.getId();        
+        Long idUser = user.getId();
         confirmationTokenRepository.deleteAllByUser_Id(idUser);
         user.setEnabled(false);
         user.setPassword(passwordEncoder.encode(dtoResetPassword.getPassword()));
@@ -148,7 +155,8 @@ public class UserServiceImpl implements UserService {
         String codigo = token.getConfirmationToken();
         String to = user.getEmail();
         String subject = RESET_PASSWORD_EMAIL_SUBJECT;
-        String text = String.format("Hola %s, confirma tu cuenta nuevamente ingresando el siguiente codigo: %s", user.getName(), codigo);
+        String text = String.format("Hola %s, confirma tu cuenta nuevamente ingresando el siguiente codigo: %s",
+                user.getName(), codigo);
 
         emailService.sendSimpleMessage(to, subject, text);
     }
@@ -170,7 +178,8 @@ public class UserServiceImpl implements UserService {
         String codigo = token.getConfirmationToken();
         String to = user.getEmail();
         String subject = NEW_CODE_EMAIL_SUBJECT;
-        String text = String.format("Hola %s, confirma tu cuenta ingresando el siguiente codigo: %s", user.getName(), codigo);
+        String text = String.format("Hola %s, confirma tu cuenta ingresando el siguiente codigo: %s", user.getName(),
+                codigo);
 
         emailService.sendSimpleMessage(to, subject, text);
     }

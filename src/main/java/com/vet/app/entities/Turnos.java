@@ -51,12 +51,10 @@ public class Turnos {
     private User veterinario;
 
     @Column(name = "fecha", nullable = false)
-    @NotBlank(message = "La fecha es obligatoria")
     @DateTimeFormat(pattern = "yyyy-MM-dd", iso = ISO.DATE)
     private LocalDate fecha;
 
     @Column(name = "horario", nullable = false)
-    @NotBlank(message = "El horario es obligatorio")
     @DateTimeFormat(pattern = "HH:mm", iso = ISO.TIME)
     private LocalTime horario;
 
@@ -74,6 +72,8 @@ public class Turnos {
     public void prePersist() {
         this.audit.onCreate();
         this.audit.onUpdate();
+        this.notificaciones = false;
+        this.estado = EstadosEnum.PENDIENTE;
     }
 
     @PreUpdate

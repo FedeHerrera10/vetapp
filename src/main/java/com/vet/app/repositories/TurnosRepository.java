@@ -8,13 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.vet.app.entities.Turnos;
+import com.vet.app.utils.EstadosEnum;
 
 public interface TurnosRepository extends CrudRepository<Turnos, Long> {
 
     @Query("SELECT t.mascota, t.veterinario, t.servicio FROM Turnos t WHERE t.mascota.id = ?1 AND t.veterinario.id = ?2 AND t.servicio.id = ?3")
     List<Object[]> findMascotaVeterinarioServicio(Long mascotaId, Long veterinarioId, Long servicioId);
 
-    boolean existsByVeterinarioIdAndFechaAndHorario(Long veterinarioId, LocalDate fecha, LocalTime horario);
+    boolean existsByVeterinarioIdAndFechaAndHorarioAndEstado(Long veterinarioId, LocalDate fecha, LocalTime horario,
+            EstadosEnum estado);
 
     List<Object[]> findTurnosByVeterinarioId(Long veterinarioId);
 

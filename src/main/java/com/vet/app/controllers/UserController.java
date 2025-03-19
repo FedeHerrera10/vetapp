@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vet.app.dtos.request.DtoResetPassword;
+import com.vet.app.dtos.request.DtoUserVeterinario;
 import com.vet.app.entities.User;
 import com.vet.app.services.UserService;
 
@@ -32,6 +33,11 @@ public class UserController {
         return (List<User>) service.findAll();
     }
 
+    @GetMapping("/veterinarios")
+    public List<DtoUserVeterinario> getAllUsersVeterinarios() {
+        return service.findAllVeterinarios();
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUser(@PathVariable Long userId) {
         return service.findById(userId).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
@@ -40,8 +46,10 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody User user) {
-        if(service.existsByUsername(user.getUsername())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya existe en el sistema.");
-        if(service.existsByEmail(user.getEmail())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El email ya existe en el sistema.");
+        if (service.existsByUsername(user.getUsername()))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario ya existe en el sistema.");
+        if (service.existsByEmail(user.getEmail()))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El email ya existe en el sistema.");
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(user));
     }
 
@@ -55,5 +63,5 @@ public class UserController {
     public String updateUser(@PathVariable Long id, @RequestBody String entity) {
         return entity;
     }
-    
+
 }

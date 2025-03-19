@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vet.app.dtos.request.DtoMascotas;
 import com.vet.app.entities.Mascota;
 import com.vet.app.entities.User;
 import com.vet.app.repositories.MascotaRepository;
@@ -26,6 +27,11 @@ public class MascotaServiceImpl implements MascotaService {
 
     @Autowired
     private UtilService utilService;
+
+    @Override
+    public Optional<DtoMascotas[]> getMascotasByClienteId(Long clienteId) {
+        return mascotaRepository.getMascotasByClienteId(clienteId);
+    }
 
     @Override
     @Transactional(readOnly = true)

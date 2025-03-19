@@ -2,6 +2,8 @@ package com.vet.app.services.disponibilidad;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,7 @@ import com.vet.app.dtos.request.IntervaloDto;
 import com.vet.app.entities.Disponibilidad;
 import com.vet.app.repositories.DisponibilidadRepository;
 import com.vet.app.repositories.TurnosRepository;
+import com.vet.app.utils.EstadosEnum;
 
 @Service
 public class DisponibilidadServiceImpl implements DisponibilidadService {
@@ -26,12 +29,14 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<IntervaloDto> obtenerIntervaloDisponibles(Long veterinarioId, LocalDate fecha) {
+    public List<IntervaloDto> obtenerIntervaloDisponibles(Long veterinarioId, IntervaloDto fecha) {
 
         Optional<List<Disponibilidad>> disponibilidades = disponibilidadRepository.findByVetAndFecha(
                 veterinarioId,
-                fecha);
+                fecha.getFecha());
         List<IntervaloDto> intervalosDisponibles = new ArrayList<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
         if (!disponibilidades.isPresent()) {
             return intervalosDisponibles;
@@ -49,11 +54,13 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
                 LocalTime horaFinIntervalo = inicio.plusHours(1);
 
                 // Se verifica que el turno en este intervalo no haya sido ya reservado
-                boolean reservado = turnoRepository.existsByVeterinarioIdAndFechaAndHorario(veterinarioId, fecha,
-                        inicio);
+                boolean reservado = turnoRepository.existsByVeterinarioIdAndFechaAndHorarioAndEstado(veterinarioId,
+                        fecha.getFecha(),
+                        inicio, EstadosEnum.PENDIENTE);
 
                 if (!reservado) {
-                    intervalosDisponibles.add(new IntervaloDto(fecha, inicio, horaFinIntervalo));
+                    intervalosDisponibles
+                            .add(new IntervaloDto(fecha.getFecha(), inicio.format(formatter), horaFinIntervalo));
                 }
 
                 inicio = inicio.plusHours(1);
@@ -63,13 +70,38 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
     }
 
     @Override
-    public Optional<Disponibilidad> delete(Long id) {
-        return Optional.empty();
+    @Transactional(readOnly = true)
+    public List<String> obtenerRangoFechasISO(Long veterinarioId) {
+        List<String> fechasISO = new ArrayList<>();
+
+        Optional<List<Disponibilidad>> disp = disponibilidadRepository.findByVet(veterinarioId);
+
+        disp.ifPresent(d -> {
+            for (Disponibilidad fec : d) {
+                // Asegúrate d e que fechaInicio no sea después de fechaFin
+                if (fec.getFechaInicio() != null && fec.getFechaFin() != null
+                        && !fec.getFechaInicio().isAfter(fec.getFechaFin())) {
+                    long diasEntreFechas = ChronoUnit.DAYS.between(fec.getFechaInicio(), fec.getFechaFin());
+                    for (long i = 0; i <= diasEntreFechas; i++) {
+                        LocalDate fecha = fec.getFechaInicio().plusDays(i);
+                        fechasISO.add(fecha.format(DateTimeFormatter.ISO_LOCAL_DATE));
+                    }
+                }
+            }
+
+        });
+
+        return fechasISO;
     }
 
     @Override
     public List<Disponibilidad> findAll() {
         return null;
+    }
+
+    @Override
+    public Optional<Disponibilidad> delete(Long id) {
+        return Optional.empty();
     }
 
     @Override
