@@ -6,11 +6,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vet.app.dtos.request.DtoMascotaUpdate;
 import com.vet.app.entities.Mascota;
 import com.vet.app.entities.User;
 import com.vet.app.repositories.MascotaRepository;
 import com.vet.app.services.UserService;
-import com.vet.app.utils.UtilService;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +23,6 @@ public class MascotaServiceImpl implements MascotaService {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UtilService utilService;
 
     @Override
     @Transactional(readOnly = true)
@@ -52,11 +49,23 @@ public class MascotaServiceImpl implements MascotaService {
 
     @Override
     @Transactional
-    public Optional<Mascota> update(Mascota mascota, Long id) {
-        return mascotaRepository.findById(id).map(m -> {
-            utilService.copyNonNullProperties(mascota, m);
-            return mascotaRepository.save(m);
-        });
+    public boolean update(DtoMascotaUpdate dtoMascotaUpdate, Long id) {
+
+        Mascota m = mascotaRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Hubo un error al actualizar la mascota"));
+
+        m.setNombre(dtoMascotaUpdate.getNombre());
+        m.setEspecie(dtoMascotaUpdate.getEspecie());
+        m.setRaza(dtoMascotaUpdate.getRaza());
+        m.setEdad(dtoMascotaUpdate.getEdad());
+        m.setPeso(dtoMascotaUpdate.getPeso());
+        m.setColor(dtoMascotaUpdate.getColor());
+        m.setCaracteristicas(dtoMascotaUpdate.getCaracteristicas());
+        m.setImagePet(dtoMascotaUpdate.getImagePet());
+
+        mascotaRepository.save(m);
+
+        return true;
     }
 
     @Override
@@ -65,6 +74,26 @@ public class MascotaServiceImpl implements MascotaService {
         Optional<Mascota> mascota = mascotaRepository.findById(id);
         mascota.ifPresent(mascotaRepository::delete);
         return mascota;
+    }
+
+    @Override
+    public List<Mascota> findByClienteId(Long clienteId) {
+        return mascotaRepository.findByClienteId(clienteId);
+    }
+
+    @Override
+    public boolean changeStatus(String dtoStatusMascota, Long id) {
+        Mascota m = mascotaRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Hubo un error al actualizar la mascota"));
+        m.setEnabled(false);
+            if(dtoStatusMascota.equals("active")){
+            m.setEnabled(true);
+        }
+        
+
+        mascotaRepository.save(m);
+
+        return true;
     }
 
 }

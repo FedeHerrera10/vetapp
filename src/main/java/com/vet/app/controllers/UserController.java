@@ -66,7 +66,6 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody DtoUserUpdate userUpdate) {
         service.updateUser(id, userUpdate);
-        
         return ResponseEntity.status(HttpStatus.OK).body("Usuario actualizado");
     }
     
