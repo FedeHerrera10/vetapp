@@ -57,6 +57,7 @@ public class Mascota {
     @Lob
     private String imagePet;
 
+    private boolean enabled;
     
     @ManyToOne
     @JoinColumn(name = "cliente_id")
