@@ -49,6 +49,12 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/auth/confirm-account/**").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/api/auth/reset-password/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/new-code/**").permitAll()
+                .requestMatchers(
+                    "/swagger-ui/**", 
+                    "/v3/api-docs/**", 
+                    "/swagger-ui.html",
+                    "/api-docs"
+                ).permitAll()
                 .anyRequest().authenticated())
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                 .addFilter(new JwtValidationFilter(authenticationManager()))
