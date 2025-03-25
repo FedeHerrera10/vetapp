@@ -31,4 +31,6 @@ public interface UserService {
     ResponseEntity<?> getUser();
 
     boolean updateUser(Long id, DtoUserUpdate userUpdate);
+
+    void createUserAdmin();
 }

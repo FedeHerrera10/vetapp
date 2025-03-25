@@ -252,7 +252,34 @@ public class UserServiceImpl implements UserService {
 
         emailService.sendSimpleMessage(to, subject, text);
     }
+    
+    public void createUserAdmin() {
+        User user = new User();
+        user.setName("admin");
+        user.setLastname("admin");
+        user.setEmail("admin@admin.com");
+        user.setUsername("admin");
+        user.setPassword(passwordEncoder.encode("admin"));
+        user.setAdmin(true);
+        user.setRoles(assignRoles(user));
+        user.setEnabled(true);
+        user.setPassword_expired(false);
+        repository.save(user);
 
+        User user2 = new User();
+        user2.setName("federico");
+        user2.setLastname("herrera");
+        user2.setEmail("herrera3299@gmail.com");
+        user2.setUsername("fherrera10");
+        user2.setPassword(passwordEncoder.encode("12345678"));
+        user2.setAdmin(false);
+        user2.setVeterinario(false);
+        user2.setCliente(true);
+        user2.setRoles(assignRoles(user2));
+        user2.setEnabled(true);
+        user2.setPassword_expired(false);
+        repository.save(user2);
+    }
     
 
 }
