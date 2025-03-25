@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    @Query("SELECT new com.vet.app.dtos.request.DtoUserVeterinario(u.id, u.name, u.lastname) FROM User u JOIN u.roles r WHERE r.name = 'ROLE_VETERINARIO' AND u.enabled = true ORDER BY u.username")
+    @Query("SELECT new com.vet.app.dtos.request.DtoUserVeterinario(u.id, u.name, u.lastname, CASE WHEN u.imageProfile IS NULL THEN '' ELSE u.imageProfile.imageData END) FROM User u JOIN u.roles r WHERE r.name = 'ROLE_VETERINARIO' AND u.enabled = true ORDER BY u.username")
     List<DtoUserVeterinario> findAllVeterinarios();
 
 }

@@ -3,6 +3,7 @@ package com.vet.app.services.turno;
 import java.util.List;
 import java.util.Optional;
 
+import com.vet.app.dtos.request.DtoTurnos;
 import com.vet.app.entities.Turnos;
 
 public interface TurnoService {
@@ -16,5 +17,7 @@ public interface TurnoService {
 
     Optional<Turnos> delete(Long id);
 
-    List<Object[]> findTurnosByVeterinarioId(Long veterinarioId);
+    List<DtoTurnos> findTurnosByVeterinarioId(Long veterinarioId);
+
+    List<DtoTurnos> findTurnosByUser(Long userId);
 }

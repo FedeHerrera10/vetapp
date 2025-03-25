@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
@@ -62,7 +63,6 @@ public class Mascota {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    @JsonBackReference
     private User cliente;
 
     @OneToMany(mappedBy = "mascota", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -11,5 +11,5 @@ public class DtoUserVeterinario {
     Long id;
     String name;
     String lastname;
-
+    String imageData;
 }

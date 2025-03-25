@@ -37,6 +37,11 @@ public class TurnoController {
         return turnoService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> viewByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(turnoService.findTurnosByUser(userId));
+    }
+
     @GetMapping("/veterinario/{veterinarioId}")
     public ResponseEntity<?> viewByVeterinario(@PathVariable Long veterinarioId) {
         return ResponseEntity.ok(turnoService.findTurnosByVeterinarioId(veterinarioId));

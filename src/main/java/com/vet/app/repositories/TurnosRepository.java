@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import com.vet.app.dtos.request.DtoTurnos;
 import com.vet.app.entities.Turnos;
 import com.vet.app.utils.EstadosEnum;
 
@@ -18,6 +19,10 @@ public interface TurnosRepository extends CrudRepository<Turnos, Long> {
     boolean existsByVeterinarioIdAndFechaAndHorarioAndEstado(Long veterinarioId, LocalDate fecha, LocalTime horario,
             EstadosEnum estado);
 
-    List<Object[]> findTurnosByVeterinarioId(Long veterinarioId);
+    @Query("SELECT new com.vet.app.dtos.request.DtoTurnos(t.id, t.mascota.id, t.mascota.nombre, s.nombre, v.name, t.fecha, t.horario, t.estado) FROM Turnos t LEFT JOIN t.mascota m LEFT JOIN t.servicio s LEFT JOIN t.veterinario v WHERE v.id = ?1 AND t.estado = 'PENDIENTE'")
+    List<DtoTurnos> findTurnosByVeterinarioId(Long veterinarioId);
+
+    @Query("SELECT new com.vet.app.dtos.request.DtoTurnos(t.id, t.mascota.id, t.mascota.nombre, s.nombre, v.name, t.fecha, t.horario, t.estado) FROM Turnos t LEFT JOIN t.mascota m LEFT JOIN t.servicio s LEFT JOIN t.veterinario v WHERE m.id = ?1 AND t.estado = 'PENDIENTE'")
+    List<DtoTurnos> findTurnosByMascotaId(Long mascotaId);
 
 }

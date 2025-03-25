@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.vet.app.AppApplication;
 import com.vet.app.dtos.request.IntervaloDto;
 import com.vet.app.entities.Disponibilidad;
 import com.vet.app.repositories.DisponibilidadRepository;
@@ -21,11 +21,17 @@ import com.vet.app.utils.EstadosEnum;
 @Service
 public class DisponibilidadServiceImpl implements DisponibilidadService {
 
+    private final AppApplication appApplication;
+
     @Autowired
     private DisponibilidadRepository disponibilidadRepository;
 
     @Autowired
     private TurnosRepository turnoRepository;
+
+    DisponibilidadServiceImpl(AppApplication appApplication) {
+        this.appApplication = appApplication;
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -38,6 +44,9 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
+        LocalDate fechaActual = LocalDate.now();
+        LocalTime horaActual = LocalTime.now();
+
         if (!disponibilidades.isPresent()) {
             return intervalosDisponibles;
         }
@@ -47,6 +56,15 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
         for (Disponibilidad disponibilidad : disponibilidades.get()) {
             LocalTime inicio = disponibilidad.getHoraInicio();
             LocalTime fin = disponibilidad.getHoraFin();
+
+            if (fecha.getFecha().equals(fechaActual)) {
+                if (horaActual.isAfter(inicio)) {
+                    inicio = horaActual.plusHours(1).truncatedTo(ChronoUnit.HOURS);
+                    if (inicio.isAfter(fin)) {
+                        continue;
+                    }
+                }
+            }
 
             // Se asume que cada turno dura 1 hora
             while (inicio.plusHours(1).compareTo(fin) <= 0) {
@@ -78,7 +96,6 @@ public class DisponibilidadServiceImpl implements DisponibilidadService {
 
         disp.ifPresent(d -> {
             for (Disponibilidad fec : d) {
-                // Asegúrate d e que fechaInicio no sea después de fechaFin
                 if (fec.getFechaInicio() != null && fec.getFechaFin() != null
                         && !fec.getFechaInicio().isAfter(fec.getFechaFin())) {
                     long diasEntreFechas = ChronoUnit.DAYS.between(fec.getFechaInicio(), fec.getFechaFin());
