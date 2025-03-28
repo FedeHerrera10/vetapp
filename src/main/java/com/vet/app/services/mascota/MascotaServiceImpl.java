@@ -1,11 +1,13 @@
 package com.vet.app.services.mascota;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vet.app.dtos.MapperUtil;
 import com.vet.app.dtos.request.DtoMascotas;
 import com.vet.app.entities.Mascota;
 import com.vet.app.entities.User;
@@ -28,6 +30,9 @@ public class MascotaServiceImpl implements MascotaService {
     @Autowired
     private UtilService utilService;
 
+    @Autowired
+    private MapperUtil mapperUtil;
+
     @Override
     public Optional<DtoMascotas[]> getMascotasByClienteId(Long clienteId) {
         return mascotaRepository.getMascotasByClienteId(clienteId);
@@ -35,8 +40,22 @@ public class MascotaServiceImpl implements MascotaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Mascota> findAll() {
-        return (List<Mascota>) mascotaRepository.findAll();
+    public List<DtoMascotas> findAll() {
+
+        List<Mascota> mascota = (List<Mascota>) mascotaRepository.findAll();
+
+        List<DtoMascotas> result = new ArrayList<>();
+
+        mascota.forEach(m -> {
+            DtoMascotas dtoMascota = new DtoMascotas();
+            dtoMascota.setId(m.getId());
+            dtoMascota.setNombre(m.getNombre());
+            dtoMascota.setEspecie(m.getEspecie());
+            dtoMascota.setRaza(m.getRaza());
+            result.add(dtoMascota);
+        });
+
+        return result;
     }
 
     @Override

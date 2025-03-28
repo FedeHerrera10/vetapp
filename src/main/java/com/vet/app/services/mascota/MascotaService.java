@@ -8,7 +8,7 @@ import com.vet.app.entities.Mascota;
 
 public interface MascotaService {
 
-    List<Mascota> findAll();
+    List<DtoMascotas> findAll();
 
     Optional<Mascota> findById(Long id);
 

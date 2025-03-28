@@ -1,6 +1,15 @@
 package com.vet.app.entities;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -29,7 +38,6 @@ public class HistorialMedico {
 
     @ManyToOne
     @JoinColumn(name = "mascota_id", nullable = false)
-    @NotBlank
     private Mascota mascota;
 
     private String notas;
@@ -38,6 +46,19 @@ public class HistorialMedico {
 
     @Column(name = "recetas_medicas")
     private String recetasMedicas;
+
+    @ManyToOne
+    @JoinColumn(name = "veterinario_id", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private User veterinario;
+
+    @Column(name = "fecha", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd", iso = ISO.DATE)
+    private LocalDate fecha;
+
+    @Column(name = "horario", nullable = false)
+    @DateTimeFormat(pattern = "HH:mm", iso = ISO.TIME)
+    private LocalTime horario;
 
     @Embedded
     @JsonIgnore

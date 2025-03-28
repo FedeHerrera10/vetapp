@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vet.app.dtos.request.DtoMascotas;
 import com.vet.app.entities.Mascota;
 import com.vet.app.services.mascota.MascotaService;
 
@@ -27,8 +28,8 @@ public class MascotaController {
     private MascotaService mascotaService;
 
     @GetMapping
-    public List<Mascota> viewAll() {
-        return (List<Mascota>) mascotaService.findAll();
+    public List<DtoMascotas> viewAll() {
+        return mascotaService.findAll();
     }
 
     @GetMapping("/{id}")

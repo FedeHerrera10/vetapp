@@ -78,7 +78,6 @@ public class User {
     private boolean password_expired;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Mascota> mascotas;
 
     @OneToMany(mappedBy = "veterinario")

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vet.app.dtos.request.DtoHostiriaClinica;
 import com.vet.app.entities.HistorialMedico;
 import com.vet.app.services.historialMedico.HistorialMedicoService;
 
@@ -31,15 +32,19 @@ public class HistorialMedicoController {
         return (List<HistorialMedico>) historialMedicoService.findAll();
     }
 
+    @GetMapping("/veterinario/{veterinarioId}")
+    public List<DtoHostiriaClinica> viewAllByVeterinario(@PathVariable Long veterinarioId) {
+        return historialMedicoService.findAllByVeterinario(veterinarioId);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> view(@PathVariable Long id) {
         return historialMedicoService.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/{mascotaId}")
-    public ResponseEntity<?> createHistorialMedico(@Valid @RequestBody HistorialMedico historialMedico,
-            @PathVariable Long mascotaId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(historialMedicoService.save(historialMedico, mascotaId));
+    @PostMapping()
+    public ResponseEntity<?> createHistorialMedico(@Valid @RequestBody HistorialMedico historialMedico) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(historialMedicoService.save(historialMedico));
     }
 
     @PutMapping("/{id}")
